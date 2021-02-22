@@ -5,8 +5,11 @@ DC_FILE?=docker-compose.yml
 bash:
 	docker-compose -f $(DC_FILE) exec $(SERVICE) bash
 
+test_bash:
+	docker-compose -f $(DC_FILE) exec -e RAILS_ENV=test $(SERVICE) bash
+
 mysql:
-	docker-compose -f $(DC_FILE) exec $(DATABASE) mysql -u user -ppassword
+	docker-compose -f $(DC_FILE) exec $(DATABASE) mysql -u root
 
 build:
 	docker-compose -f $(DC_FILE) build --pull
@@ -29,4 +32,7 @@ setup_db:
 migrate_db:
 	docker-compose -f $(DC_FILE) run --rm $(SERVICE) rails db:migrate
 
-build_db: create_db migrate_db
+build_db: create_db setup_db migrate_db
+
+routes:
+	docker-compose -f $(DC_FILE) run --rm $(SERVICE) rails routes
